@@ -46,16 +46,16 @@ public class TestMatrix {
                 sum += i;
             }
         }
-        System.out.println("BTW: the sum with " + SIZE + "*" + SIZE + " elements is: " + sum);
+        System.out.println("BTW: the sum with " + SIZE + "*" + SIZE + " elements is: " + sum); //NOPMD
         long time;
         for (final int threads : new int[] { 1, 2, 3, 8, 16, 32, 100 }) {
-            final SumMatrix sumList = null; // new MultiThreadedSumMatrix(threads);
+            final SumMatrix sumList = new MultiThreadedSumMatrix(threads);
             time = System.nanoTime();
             assertEquals(sum, sumList.sum(matrix), EXPECTED_DELTA);
             time = System.nanoTime() - time;
-            System.out.println("Tried with " + threads + " thread"
+            System.out.println("Tried with " + threads + " thread" //NOPMD
                     + (threads == 1 ? "" : "s") + ": "
-                    + TimeUnit.NANOSECONDS.toMillis(time) + MSEC);
+                    + TimeUnit.NANOSECONDS.toMillis(time) + MSEC); //NOPMD
         }
     }
 

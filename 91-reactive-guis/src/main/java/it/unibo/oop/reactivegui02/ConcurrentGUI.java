@@ -13,12 +13,11 @@ import javax.swing.SwingUtilities;
  * Second example of reactive GUI.
  */
 public final class ConcurrentGUI extends JFrame {
-    
     private static final long serialVersionUID = 1L;
     private static final double WIDTH_PERC = 0.2;
     private static final double HEIGHT_PERC = 0.1;
     private final JLabel display = new JLabel();
-    private final JButton stop = new JButton("stop");
+    private final JButton btnstop = new JButton("stop");
     private final JButton down = new JButton("down");
     private final JButton up = new JButton("up");
     /**
@@ -31,7 +30,7 @@ public final class ConcurrentGUI extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         final JPanel panel = new JPanel();
         panel.add(display);
-        panel.add(stop);
+        panel.add(btnstop);
         panel.add(down);
         panel.add(up);
         this.getContentPane().add(panel);
@@ -46,9 +45,9 @@ public final class ConcurrentGUI extends JFrame {
         /*
          * Register a listener that stops it
          */
-        stop.addActionListener((e) -> agent.stopCounting());
-        down.addActionListener((e) -> agent.change_Direction(false));
-        up.addActionListener((e) -> agent.change_Direction(true));
+        btnstop.addActionListener((e) -> agent.stopCounting());
+        down.addActionListener((e) -> agent.changeDirection(false));
+        up.addActionListener((e) -> agent.changeDirection(true));
 
     }
 
@@ -69,7 +68,7 @@ public final class ConcurrentGUI extends JFrame {
          */
         private volatile boolean stop;
         private int counter;
-        private volatile boolean direction=true;
+        private volatile boolean direction = true;
         @Override
         public void run() {
             while (!this.stop) {
@@ -77,14 +76,14 @@ public final class ConcurrentGUI extends JFrame {
                     // The EDT doesn't access `counter` anymore, it doesn't need to be volatile 
                     final var nextText = Integer.toString(this.counter);
                     SwingUtilities.invokeAndWait(() -> ConcurrentGUI.this.display.setText(nextText));
-                    this.counter=this.direction ? this.counter+1 : this.counter-1;
+                    this.counter = this.direction ? this.counter + 1 : this.counter - 1;
                     Thread.sleep(100);
                 } catch (InvocationTargetException | InterruptedException ex) {
                     /*
                      * This is just a stack trace print, in a real program there
                      * should be some logging and decent error reporting
                      */
-                    ex.printStackTrace();
+                    ex.printStackTrace(); //NOPMD
                 }
             }
         }
@@ -94,8 +93,11 @@ public final class ConcurrentGUI extends JFrame {
          */
         public void stopCounting() {
             this.stop = true;
+            down.setEnabled(false);
+            btnstop.setEnabled(false);
+            up.setEnabled(false);
         }
-        public void change_Direction(boolean dire) {
+        public void changeDirection(final boolean dire) {
             this.direction = dire;
         }
     }

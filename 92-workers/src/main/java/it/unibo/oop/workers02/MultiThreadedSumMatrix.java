@@ -1,13 +1,13 @@
-package it.unibo.oop.workers01;
-
+package it.unibo.oop.workers02;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * This is a standard implementation of the calculation.
  * 
  */
-public final class MultiThreadedListSumClassic implements SumList {
+public class MultiThreadedSumMatrix implements SumMatrix {
 
     private final int nthread;
 
@@ -16,12 +16,16 @@ public final class MultiThreadedListSumClassic implements SumList {
      * @param nthread
      *            no. of thread performing the sum.
      */
-    public MultiThreadedListSumClassic(final int nthread) {
-        this.nthread = nthread;
+    public MultiThreadedSumMatrix(final int nthread) {
+        if (nthread < 1) {
+            throw new IllegalArgumentException();
+        } else {
+            this.nthread = nthread;
+        } 
     }
 
     private static class Worker extends Thread {
-        private final List<Integer> list;
+        private final double[][] matrix;
         private final int startpos;
         private final int nelem;
         private long res;
@@ -29,25 +33,26 @@ public final class MultiThreadedListSumClassic implements SumList {
         /**
          * Build a new worker.
          * 
-         * @param list
+         * @param matrix
          *            the list to sum
          * @param startpos
          *            the initial position for this worker
          * @param nelem
          *            the no. of elems to sum up for this worker
          */
-        Worker(final List<Integer> list, final int startpos, final int nelem) {
+        Worker(final double[][] matrix, final int startpos, final int nelem) {
             super();
-            this.list = list;
+            this.matrix = Arrays.copyOf(matrix, matrix.length);
             this.startpos = startpos;
             this.nelem = nelem;
         }
 
         @Override
         public void run() {
-            System.out.println("Working from position " + startpos + " to position " + (startpos + nelem - 1)); //NOPMD
-            for (int i = startpos; i < list.size() && i < startpos + nelem; i++) {
-                this.res += this.list.get(i);
+            for (int i = startpos; i < this.matrix.length && i < startpos + nelem; i++) {
+                for (final double d : this.matrix[i]) {
+                    this.res += d;
+                }
             }
         }
 
@@ -61,16 +66,18 @@ public final class MultiThreadedListSumClassic implements SumList {
         }
 
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public long sum(final List<Integer> list) {
-        final int size = list.size() % nthread + list.size() / nthread;
+    public double sum(final double[][] matrix) {
+        final int size = matrix.length % nthread + matrix.length / nthread;
         /*
          * Build a list of workers
          */
         final List<Worker> workers = new ArrayList<>(nthread);
-        for (int start = 0; start < list.size(); start += size) {
-            workers.add(new Worker(list, start, size));
+        for (int start = 0; start < matrix.length; start += size) {
+            workers.add(new Worker(matrix, start, size));
         }
         /*
          * Start them

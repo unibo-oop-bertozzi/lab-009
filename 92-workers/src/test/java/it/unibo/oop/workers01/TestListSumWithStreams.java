@@ -38,7 +38,7 @@ public class TestListSumWithStreams {
                 .stream()
                 .mapToLong(Integer::longValue)
                 .sum();
-        System.out.println("BTW: the sum with " + SIZE + " elements is: " + sum);
+        System.out.println("BTW: the sum with " + SIZE + " elements is: " + sum); //NOPMD
         /*
          * Prepare time ant test with different number of threads
          */
@@ -47,8 +47,8 @@ public class TestListSumWithStreams {
             final SumList sumList = new MultiThreadedListSumWithStreams(threads);
             time = System.currentTimeMillis();
             assertEquals(sum, sumList.sum(list));
-            System.out.println("Tried with " + threads + " thread: "
-                    + (System.currentTimeMillis() - time) + MSEC);
+            System.out.println("Tried with " + threads + " thread: " //NOPMD
+                    + (System.currentTimeMillis() - time) + MSEC); 
         }
     }
 
